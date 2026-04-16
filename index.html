@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA // TASK_HOUND (WEB VIEW)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap');
+        :root {
+            --bg: #000000; --panel: #050505; --border: #1a1a1a;
+            --green: #39ff14; --orange: #ff9900; --yellow: #ffff00; --red: #ff0000; --wire: #ffcc00;
+        }
+        body {
+            background-color: var(--bg); color: #fff; font-family: 'Arial Rounded MT Bold', 'Nunito', sans-serif;
+            margin: 0; padding: 20px; overflow-x: hidden;
+        }
+        .header { text-align: center; margin-bottom: 30px; color: var(--orange); font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
+        .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start; }
+        .column { background: var(--panel); border: 2px solid var(--border); padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .col-header { border: 2px solid var(--wire); text-align: center; padding: 10px; margin-bottom: 10px; font-size: 18px; color: var(--wire); letter-spacing: 4px; position: relative; }
+        .col-header::after { content: ''; display: block; height: 6px; width: calc(100% - 20px); position: absolute; bottom: 6px; left: 10px; }
+        .col-por-hacer::after { background-color: #fff; }
+        .col-en-espera::after { background-color: var(--red); }
+        .col-en-progreso::after { background-color: var(--yellow); }
+        .col-completado::after { background-color: var(--green); }
+        
+        .card { background: var(--bg); border: 2px solid; padding: 15px; position: relative; }
+        .card::before { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; height: 4px; }
+        .card.c-por-hacer { border-color: #444; } .card.c-por-hacer::before { background: #444; }
+        .card.c-en-espera { border-color: var(--red); } .card.c-en-espera::before { background: var(--red); }
+        .card.c-en-progreso { border-color: var(--yellow); } .card.c-en-progreso::before { background: var(--yellow); }
+        .card.c-completado { border-color: var(--green); } .card.c-completado::before { background: var(--green); }
+        
+        .c-date { font-size: 11px; color: #aaa; margin-bottom: 8px; }
+        .c-title { font-size: 18px; margin: 5px 0 15px 0; line-height: 1.2; }
+        .c-progress { font-size: 14px; color: var(--green); margin-bottom: 15px; white-space: pre-line; }
+        .c-indicators { background: var(--panel); border: 1px solid var(--border); padding: 10px; margin-bottom: 10px; font-size: 14px; }
+        .c-btn { background: #ee9507; color: #000; text-align: center; padding: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .alert-red { color: var(--red); } .alert-orange { color: var(--orange); } .alert-green { color: var(--green); }
+    </style>
+</head>
+<body>
+    <div class="header">[ SISTEMA // TASK_HOUND PUBLIC VIEW ]</div>
+    <div class="board" id="board"></div>
+
+    <script>
+        const tasks = [{"id": "878c6b21-c6ce-4a3c-9efd-3f55b18df9c3", "titulo": "Sitio Documentación", "descripcion": "Capacitación y uso del sitio kb.cobachbc.edu.mx", "estado": "En Espera", "fecha_creacion": "2025/03/13", "fecha_actualizacion": "2026/04/15", "pasos": [{"nombre": "Correo enviado", "area": "Jefatura Informática", "completado": false, "fecha_inicio": "2025-03-13 09:34", "fecha_fin": ""}]}, {"id": "a902be1e-bace-4d04-b4b5-47c4b6933b69", "titulo": "Propuesta de Política", "descripcion": "Para la administración y uso de las cuentas de correo institucional", "estado": "En Espera", "fecha_creacion": "2025/09/02", "fecha_actualizacion": "2026/04/15", "pasos": [{"nombre": "Propuesta presentada", "area": "Jefe Informática", "completado": false, "fecha_inicio": "2025-10-20 09:33", "fecha_fin": ""}]}, {"id": "aca8f830-9d09-4951-bde6-ad8d00b7185f", "titulo": "Licenciamiento alumnos", "descripcion": "Asignación de licencias Plus para población de alumnos", "estado": "En Espera", "pasos": [{"nombre": "Listado de matrículas para asignar", "area": "Servicios Educativos", "completado": false, "fecha_inicio": "2025/03/23", "fecha_fin": "2026/03/23"}], "fecha_creacion": "2025/10/07", "fecha_actualizacion": "2026/04/14"}];
+        const estados = [
+            { id: "Por Hacer", class: "col-por-hacer", name: "T A R E A S" },
+            { id: "En Espera", class: "col-en-espera", name: "E N  E S P E R A" },
+            { id: "En Progreso", class: "col-en-progreso", name: "E N  C U R S O" },
+            { id: "Completado", class: "col-completado", name: "C O M P L E T A D A S" }
+        ];
+
+        function getDays(d1, d2) {
+            return Math.max(0, Math.floor((d2 - d1) / (1000 * 60 * 60 * 24)));
+        }
+
+        function parseDate(dStr) {
+            if (!dStr || dStr === "Desconocida") return null;
+            return new Date(dStr.split(" ")[0].replace(/-/g, "/"));
+        }
+
+        const board = document.getElementById('board');
+        const now = new Date();
+
+        estados.forEach(est => {
+            const col = document.createElement('div');
+            col.className = 'column';
+            col.innerHTML = `<div class="col-header ${est.class}">${est.name}</div>`;
+            
+            const colTasks = tasks.filter(t => t.estado === est.id);
+            colTasks.forEach(t => {
+                let progressText = "";
+                const pasos = t.pasos || [];
+                const completados = pasos.filter(p => p.completado).length;
+                if (pasos.length === 0) progressText = "PROGRESO: DESCONOCIDO";
+                else {
+                    const actual = pasos.find(p => !p.completado);
+                    progressText = `PROGRESO: [${completados}/${pasos.length}]<br>`;
+                    if (actual) progressText += `> ACTUAL: ${actual.nombre}<br>> ÁREA: ${actual.area}`;
+                    else progressText += `> TODOS LOS PASOS COMPLETADOS`;
+                }
+
+                let indicatorsHtml = '';
+                const cDate = parseDate(t.fecha_creacion);
+                
+                if (t.estado === "En Espera") {
+                    let cDays = cDate ? getDays(cDate, now) : 0;
+                    let lastDate = cDate;
+                    pasos.forEach(p => {
+                        const fIni = parseDate(p.fecha_inicio);
+                        const fFin = parseDate(p.fecha_fin);
+                        if (fIni && fIni > lastDate) lastDate = fIni;
+                        if (fFin && fFin > lastDate) lastDate = fFin;
+                    });
+                    let aDays = lastDate ? getDays(lastDate, now) : cDays;
+                    
+                    indicatorsHtml = `
+                        <div class="c-indicators">
+                            <div class="${cDays > 7 ? 'alert-red' : 'alert-orange'}">ANTIGÜEDAD : ${String(cDays).padStart(2, '0')} DÍAS</div>
+                            <div class="${aDays > 3 ? 'alert-red' : 'alert-orange'}">INACTIVIDAD : ${String(aDays).padStart(2, '0')} DÍAS</div>
+                        </div>`;
+                } else if (t.estado === "Completado") {
+                    let uDate = parseDate(t.fecha_actualizacion);
+                    let days = (cDate && uDate) ? getDays(cDate, uDate) : 0;
+                    indicatorsHtml = `
+                        <div class="c-indicators alert-green">
+                            COMPLETADO EN : ${days > 0 ? String(days).padStart(2, '0') + ' DÍAS' : '< 24 HORAS'}
+                        </div>`;
+                }
+
+                const cardClass = 'c-' + t.estado.toLowerCase().replace(' ', '-');
+                
+                const card = document.createElement('div');
+                card.className = `card ${cardClass}`;
+                card.innerHTML = `
+                    <div class="c-date">CREACIÓN: ${t.fecha_creacion}</div>
+                    ${indicatorsHtml}
+                    <div class="c-title">${t.titulo.toUpperCase()}</div>
+                    <div class="c-progress">${progressText}</div>
+                    <div class="c-btn">[ MODO SOLO LECTURA ]</div>
+                `;
+                col.appendChild(card);
+            });
+            board.appendChild(col);
+        });
+    </script>
+</body>
+</html>
