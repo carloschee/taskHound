@@ -23,7 +23,8 @@
         .col-en-progreso::after { background-color: var(--yellow); }
         .col-completado::after { background-color: var(--green); }
         
-        .card { background: var(--bg); border: 2px solid; padding: 15px; position: relative; }
+        .card { background: var(--bg); border: 2px solid; padding: 15px; position: relative; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
         .card::before { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; height: 4px; }
         .card.c-por-hacer { border-color: #444; } .card.c-por-hacer::before { background: #444; }
         .card.c-en-espera { border-color: var(--red); } .card.c-en-espera::before { background: var(--red); }
@@ -34,15 +35,64 @@
         .c-title { font-size: 18px; margin: 5px 0 15px 0; line-height: 1.2; }
         .c-progress { font-size: 14px; color: var(--green); margin-bottom: 15px; white-space: pre-line; }
         .c-indicators { background: var(--panel); border: 1px solid var(--border); padding: 10px; margin-bottom: 10px; font-size: 14px; }
-        .c-btn { background: #ee9507; color: #000; text-align: center; padding: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .c-btn { background: #ee9507; color: #000; text-align: center; padding: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .c-btn:hover { background: #cc7a00; border-color: #fff; color: #fff; }
         .alert-red { color: var(--red); } .alert-orange { color: var(--orange); } .alert-green { color: var(--green); }
+        
+        /* ESTILOS DEL MODAL WEB */
+        .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(10, 10, 10, 0.9); overflow: auto; }
+        .modal-content { background-color: var(--bg); margin: 5% auto; width: 90%; max-width: 650px; border: 2px solid #e60033; position: relative; padding-bottom: 20px; }
+        .modal-dec-top { background-color: #e60033; height: 8px; margin: 20px 20px 0 20px; }
+        .modal-dec-sub { background-color: #555588; height: 4px; margin: 2px 20px 0 20px; }
+        .modal-header { padding: 20px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start; color: #e60033; border-bottom: 1px solid #1a1a1a; }
+        .modal-title { font-size: 24px; text-transform: uppercase; }
+        .close-btn { color: #555588; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
+        .close-btn:hover { color: #e60033; }
+        .modal-body { padding: 20px; color: #fff; }
+        .m-label { color: #8da9d4; font-size: 12px; margin-bottom: 5px; display: block; }
+        .m-text { font-size: 16px; margin-bottom: 15px; }
+        .m-desc { background-color: var(--panel); border: 1px solid #555588; padding: 15px; margin-top: 5px; margin-bottom: 20px; white-space: pre-wrap; font-family: monospace; color: #fff; }
+        .m-step { background-color: var(--panel); border: 1px solid #555588; padding: 10px; margin-bottom: 10px; }
+        .step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+        .step-bot { color: #8da9d4; font-size: 12px; display: flex; gap: 15px; }
+        .st-ok { color: var(--green); } .st-wait { color: var(--red); }
     </style>
 </head>
 <body>
     <div class="board" id="board"></div>
 
+    <!-- ESTRUCTURA DEL MODAL -->
+    <div id="taskModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <div class="modal-dec-top"></div>
+            <div class="modal-dec-sub"></div>
+            <div class="modal-header">
+                <div class="modal-title" id="mTitle"></div>
+                <span class="close-btn" onclick="closeModal()">[ X ]</span>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 30px;">
+                    <div>
+                        <span class="m-label">ESTADO ACTUAL:</span>
+                        <div class="m-text" id="mStatus" style="color: var(--yellow);"></div>
+                    </div>
+                    <div>
+                        <span class="m-label">FECHA DE CREACIÓN:</span>
+                        <div class="m-text" id="mDate"></div>
+                    </div>
+                </div>
+                
+                <span class="m-label">DESCRIPCIÓN GENERAL:</span>
+                <div class="m-desc" id="mDesc"></div>
+                
+                <span class="m-label" style="color: #e60033; font-size: 16px; margin-bottom: 10px;">[ SECUENCIA DE PASOS ]</span>
+                <div id="mSteps"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const tasks = [{"id": "878c6b21-c6ce-4a3c-9efd-3f55b18df9c3", "titulo": "Sitio Documentación", "descripcion": "Capacitación y uso del sitio kb.cobachbc.edu.mx", "estado": "En Espera", "fecha_creacion": "2025/03/13", "fecha_actualizacion": "2026/04/16", "pasos": [{"nombre": "Correo enviado", "area": "Jefatura Informática", "completado": false, "fecha_inicio": "2025-03-13 09:34", "fecha_fin": ""}]}, {"id": "a902be1e-bace-4d04-b4b5-47c4b6933b69", "titulo": "Propuesta de Política", "descripcion": "Para la administración y uso de las cuentas de correo institucional", "estado": "En Espera", "fecha_creacion": "2025/09/02", "fecha_actualizacion": "2026/04/16", "pasos": [{"nombre": "Propuesta presentada", "area": "Jefe Informática", "completado": false, "fecha_inicio": "2025-10-20 09:33", "fecha_fin": ""}]}, {"id": "aca8f830-9d09-4951-bde6-ad8d00b7185f", "titulo": "Licenciamiento alumnos", "descripcion": "Asignación de licencias Plus para población de alumnos", "estado": "En Espera", "pasos": [{"nombre": "Listado de matrículas para asignar", "area": "Servicios Educativos", "completado": false, "fecha_inicio": "2025/03/23", "fecha_fin": "2026/03/23"}], "fecha_creacion": "2025/10/07", "fecha_actualizacion": "2026/04/16"}];
+        const tasks = [{"id": "878c6b21-c6ce-4a3c-9efd-3f55b18df9c3", "titulo": "Sitio Documentación", "descripcion": "Capacitación y uso del sitio kb.cobachbc.edu.mx", "estado": "Por Hacer", "fecha_creacion": "2025/03/13", "fecha_actualizacion": "2026/04/16", "pasos": [{"nombre": "Correo enviado", "area": "Jefatura Informática", "completado": false, "fecha_inicio": "2025-03-13 09:34", "fecha_fin": ""}]}, {"id": "a902be1e-bace-4d04-b4b5-47c4b6933b69", "titulo": "Propuesta de Política", "descripcion": "Para la administración y uso de las cuentas de correo institucional", "estado": "En Espera", "fecha_creacion": "2025/09/02", "fecha_actualizacion": "2026/04/16", "pasos": [{"nombre": "Propuesta presentada", "area": "Jefe Informática", "completado": false, "fecha_inicio": "2025-10-20 09:33", "fecha_fin": ""}]}, {"id": "aca8f830-9d09-4951-bde6-ad8d00b7185f", "titulo": "Licenciamiento alumnos", "descripcion": "Asignación de licencias Plus para población de alumnos", "estado": "En Espera", "pasos": [{"nombre": "Listado de matrículas para asignar", "area": "Servicios Educativos", "completado": false, "fecha_inicio": "2025/03/23", "fecha_fin": "2026/03/23"}], "fecha_creacion": "2025/10/07", "fecha_actualizacion": "2026/04/16"}];
         const estados = [
             { id: "Por Hacer", class: "col-por-hacer", name: "T A R E A S" },
             { id: "En Espera", class: "col-en-espera", name: "E N  E S P E R A" },
@@ -117,12 +167,56 @@
                     ${indicatorsHtml}
                     <div class="c-title">${t.titulo.toUpperCase()}</div>
                     <div class="c-progress">${progressText}</div>
-                    <div class="c-btn">[ MODO SOLO LECTURA ]</div>
+                    <div class="c-btn" onclick="openModal('${t.id}')">[ VER DETALLES ]</div>
                 `;
                 col.appendChild(card);
             });
             board.appendChild(col);
         });
+
+        // LÓGICA DEL MODAL
+        function openModal(id) {
+            const t = tasks.find(x => x.id === id);
+            if (!t) return;
+            
+            document.getElementById('mTitle').innerText = t.titulo;
+            document.getElementById('mStatus').innerText = t.estado.toUpperCase();
+            document.getElementById('mDate').innerText = t.fecha_creacion;
+            document.getElementById('mDesc').innerText = t.descripcion || "[ SIN DESCRIPCIÓN ]";
+            
+            const stepsContainer = document.getElementById('mSteps');
+            stepsContainer.innerHTML = '';
+            
+            if (!t.pasos || t.pasos.length === 0) {
+                stepsContainer.innerHTML = '<div style="color: gray;">[ SIN PASOS REGISTRADOS ]</div>';
+            } else {
+                t.pasos.forEach((p, idx) => {
+                    const isOk = p.completado;
+                    const icon = isOk ? '<span class="st-ok">[ OK ]</span>' : '<span class="st-wait">[ WAIT ]</span>';
+                    const stepHtml = `
+                        <div class="m-step">
+                            <div class="step-top">
+                                <span>PASO ${idx + 1} // ${p.nombre} [ÁREA: ${p.area}]</span>
+                                ${icon}
+                            </div>
+                            <div class="step-bot">
+                                <span>INICIO: ${p.fecha_inicio || '--'}</span>
+                                <span>FIN: ${p.fecha_fin || '--'}</span>
+                            </div>
+                        </div>
+                    `;
+                    stepsContainer.innerHTML += stepHtml;
+                });
+            }
+            
+            document.getElementById('taskModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
     </script>
 </body>
 </html>
