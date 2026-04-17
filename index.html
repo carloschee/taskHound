@@ -143,11 +143,12 @@
                         if (fFin && fFin > lastDate) lastDate = fFin;
                     });
                     let aDays = lastDate ? getDays(lastDate, now) : cDays;
+                    let textInactividad = pasos.length > 0 ? `INACTIVIDAD : ${String(aDays).padStart(2, '0')} DÍAS` : "SIN ACTUALIZACIONES";
                     
                     indicatorsHtml = `
                         <div class="c-indicators">
                             <div class="${cDays > 7 ? 'alert-red' : 'alert-orange'}">ANTIGÜEDAD : ${String(cDays).padStart(2, '0')} DÍAS</div>
-                            <div class="${aDays > 3 ? 'alert-red' : 'alert-orange'}">INACTIVIDAD : ${String(aDays).padStart(2, '0')} DÍAS</div>
+                            <div class="${aDays > 3 ? 'alert-red' : 'alert-orange'}">${textInactividad}</div>
                         </div>`;
                 } else if (t.estado === "Completado") {
                     let uDate = parseDate(t.fecha_actualizacion);
