@@ -16,7 +16,7 @@
         }
         .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start; }
         .column { background: var(--panel); border: 2px solid var(--border); padding: 10px; display: flex; flex-direction: column; gap: 10px; }
-        .col-header { border: 2px solid var(--wire); text-align: center; padding: 10px; margin-bottom: 10px; font-size: 18px; color: var(--wire); letter-spacing: 4px; position: relative; }
+        .col-header { border: 2px solid var(--wire); text-align: center; padding: 8px 10px; margin-bottom: 10px; font-size: 16px; color: var(--wire); letter-spacing: 2px; position: relative; }
         .col-header::after { content: ''; display: block; height: 6px; width: calc(100% - 20px); position: absolute; bottom: 6px; left: 10px; }
         .col-por-hacer::after { background-color: #fff; }
         .col-en-espera::after { background-color: var(--red); }
@@ -32,10 +32,10 @@
         .card.c-completado { border-color: var(--green); } .card.c-completado::before { background: var(--green); }
         
         .c-date { font-size: 11px; color: #aaa; margin-bottom: 8px; }
-        .c-title { font-size: 18px; margin: 5px 0 15px 0; line-height: 1.2; }
-        .c-progress { font-size: 14px; color: var(--green); margin-bottom: 15px; white-space: pre-line; }
-        .c-indicators { background: var(--panel); border: 1px solid var(--border); padding: 10px; margin-bottom: 10px; font-size: 14px; }
-        .c-btn { background: #ee9507; color: #000; text-align: center; padding: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .c-title { font-size: 16px; margin: 5px 0 15px 0; line-height: 1.2; }
+        .c-progress { font-size: 13px; color: var(--green); margin-bottom: 15px; white-space: pre-line; }
+        .c-indicators { background: var(--panel); border: 1px solid var(--border); padding: 8px; margin-bottom: 10px; font-size: 12px; }
+        .c-btn { background: #ee9507; color: #000; text-align: center; padding: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
         .c-btn:hover { background: #cc7a00; border-color: #fff; color: #fff; }
         .alert-red { color: var(--red); } .alert-orange { color: var(--orange); } .alert-green { color: var(--green); }
         
@@ -45,15 +45,15 @@
         .modal-dec-top { background-color: #e60033; height: 8px; margin: 20px 20px 0 20px; }
         .modal-dec-sub { background-color: #555588; height: 4px; margin: 2px 20px 0 20px; }
         .modal-header { padding: 20px 20px 10px 20px; display: flex; justify-content: space-between; align-items: flex-start; color: #e60033; border-bottom: 1px solid #1a1a1a; }
-        .modal-title { font-size: 24px; text-transform: uppercase; }
+        .modal-title { font-size: 20px; text-transform: uppercase; }
         .close-btn { color: #555588; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
         .close-btn:hover { color: #e60033; }
         .modal-body { padding: 20px; color: #fff; }
         .m-label { color: #8da9d4; font-size: 12px; margin-bottom: 5px; display: block; }
-        .m-text { font-size: 16px; margin-bottom: 15px; }
-        .m-desc { background-color: var(--panel); border: 1px solid #555588; padding: 15px; margin-top: 5px; margin-bottom: 20px; white-space: pre-wrap; font-family: monospace; color: #fff; }
+        .m-text { font-size: 14px; margin-bottom: 15px; }
+        .m-desc { background-color: var(--panel); border: 1px solid #555588; padding: 15px; margin-top: 5px; margin-bottom: 20px; white-space: pre-wrap; font-family: monospace; color: #fff; font-size: 13px; }
         .m-step { background-color: var(--panel); border: 1px solid #555588; padding: 10px; margin-bottom: 10px; }
-        .step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
+        .step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; font-size: 13px; }
         .step-bot { color: #8da9d4; font-size: 12px; display: flex; gap: 15px; }
         .st-ok { color: var(--green); } .st-wait { color: var(--red); }
     </style>
@@ -85,7 +85,7 @@
                 <span class="m-label">DESCRIPCIÓN GENERAL:</span>
                 <div class="m-desc" id="mDesc"></div>
                 
-                <span class="m-label" style="color: #e60033; font-size: 16px; margin-bottom: 10px;">[ SECUENCIA DE PASOS ]</span>
+                <span class="m-label" style="color: #e60033; font-size: 14px; margin-bottom: 10px;">[ SECUENCIA DE PASOS ]</span>
                 <div id="mSteps"></div>
             </div>
         </div>
@@ -94,10 +94,10 @@
     <script>
         const tasks = [{"id": "5e7ff36f-abef-459d-92d8-455d496b8f6f", "titulo": "Implementación de Google Chat", "descripcion": "Aprobación de política de uso para Google Chat como herramienta de comunicación institucional", "estado": "En Espera", "fecha_creacion": "2024/09/24", "fecha_actualizacion": "2026/04/17", "pasos": [{"nombre": "Política propuesta", "area": "Jefatura Informática", "completado": false, "fecha_inicio": "2024/09/24 10:47", "fecha_fin": ""}]}, {"id": "459ef436-f671-4acc-b98c-98587eff692d", "titulo": "Apps adicionales a Workspace", "descripcion": "Configurar acceso y permisos a las aplicaciones incluídas en Workspace pero no cubiertas por el contrato pincipal de servicios", "estado": "En Espera", "fecha_creacion": "2024/09/30", "fecha_actualizacion": "2026/04/17", "pasos": []}, {"id": "878c6b21-c6ce-4a3c-9efd-3f55b18df9c3", "titulo": "Sitio Documentación", "descripcion": "Capacitación y uso del sitio kb.cobachbc.edu.mx", "estado": "En Espera", "fecha_creacion": "2025/03/13", "fecha_actualizacion": "2026/04/16", "pasos": [{"nombre": "Correo enviado", "area": "Jefatura Informática", "completado": false, "fecha_inicio": "2025-03-13 09:34", "fecha_fin": ""}]}, {"id": "a902be1e-bace-4d04-b4b5-47c4b6933b69", "titulo": "Propuesta de Política", "descripcion": "Para la administración y uso de las cuentas de correo institucional", "estado": "En Espera", "fecha_creacion": "2025/09/02", "fecha_actualizacion": "2026/04/16", "pasos": [{"nombre": "Propuesta presentada", "area": "Jefe Informática", "completado": false, "fecha_inicio": "2025-10-20 09:33", "fecha_fin": ""}]}, {"id": "aca8f830-9d09-4951-bde6-ad8d00b7185f", "titulo": "Licenciamiento alumnos", "descripcion": "Asignación de licencias Plus para población de alumnos", "estado": "En Espera", "pasos": [{"nombre": "Listado de matrículas para asignar", "area": "Servicios Educativos", "completado": false, "fecha_inicio": "2025/03/23", "fecha_fin": "2026/03/23"}], "fecha_creacion": "2025/10/07", "fecha_actualizacion": "2026/04/16"}];
         const estados = [
-            { id: "Por Hacer", class: "col-por-hacer", name: "T A R E A S" },
-            { id: "En Espera", class: "col-en-espera", name: "E N  E S P E R A" },
-            { id: "En Progreso", class: "col-en-progreso", name: "E N  C U R S O" },
-            { id: "Completado", class: "col-completado", name: "C O M P L E T A D A S" }
+            { id: "Por Hacer", class: "col-por-hacer", name: "TAREAS" },
+            { id: "En Espera", class: "col-en-espera", name: "EN ESPERA" },
+            { id: "En Progreso", class: "col-en-progreso", name: "EN CURSO" },
+            { id: "Completado", class: "col-completado", name: "COMPLETADAS" }
         ];
 
         function getDays(d1, d2) {
