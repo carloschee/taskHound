@@ -176,7 +176,6 @@
             board.appendChild(col);
         });
 
-        // LÓGICA DEL MODAL
         function openModal(id) {
             const t = tasks.find(x => x.id === id);
             if (!t) return;
@@ -212,7 +211,7 @@
             }
             
             document.getElementById('taskModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeModal() {
